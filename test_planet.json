@@ -1,0 +1,9 @@
+{
+  "name": "Test Planet",
+  "distance": 20.5,
+  "star_type": "G2V",
+  "planet_radius": 0.1,
+  "orbital_period": 365,
+  "stellar_mass": 1.0,
+  "data_quality": "Good"
+}

@@ -1,0 +1,87 @@
+{
+  "feature_columns": [
+    "pl_rade",
+    "pl_masse",
+    "pl_eqt",
+    "st_teff",
+    "pl_orbper",
+    "sy_dist",
+    "st_rad",
+    "st_mass",
+    "density",
+    "surface_gravity",
+    "stellar_flux",
+    "orbital_velocity"
+  ],
+  "best_parameters": {
+    "colsample_bytree": 0.8,
+    "gamma": 0,
+    "learning_rate": 0.1,
+    "max_depth": 3,
+    "min_child_weight": 1,
+    "n_estimators": 100,
+    "subsample": 1.0
+  },
+  "performance": {
+    "r2_score": 0.9273742202437215,
+    "mse": 0.0009425083152871102,
+    "cv_scores_mean": 0.6324730059238824,
+    "cv_scores_std": 0.434383621354194
+  },
+  "feature_importance": [
+    {
+      "feature": "pl_eqt",
+      "importance": 0.20714078843593597
+    },
+    {
+      "feature": "sy_dist",
+      "importance": 0.17865309119224548
+    },
+    {
+      "feature": "pl_orbper",
+      "importance": 0.15521422028541565
+    },
+    {
+      "feature": "density",
+      "importance": 0.14816343784332275
+    },
+    {
+      "feature": "pl_rade",
+      "importance": 0.09954418241977692
+    },
+    {
+      "feature": "stellar_flux",
+      "importance": 0.06264472007751465
+    },
+    {
+      "feature": "surface_gravity",
+      "importance": 0.06000899523496628
+    },
+    {
+      "feature": "st_teff",
+      "importance": 0.04633977264165878
+    },
+    {
+      "feature": "orbital_velocity",
+      "importance": 0.0305356215685606
+    },
+    {
+      "feature": "st_rad",
+      "importance": 0.00436777900904417
+    },
+    {
+      "feature": "pl_masse",
+      "importance": 0.004242748022079468
+    },
+    {
+      "feature": "st_mass",
+      "importance": 0.0031446423381567
+    }
+  ],
+  "training_date": "2025-08-22T17:07:05.141658",
+  "calibration": {
+    "reference_planet": "Earth",
+    "scale_factor": 2.202414035797119,
+    "reference_score": 1.0
+  }
+}

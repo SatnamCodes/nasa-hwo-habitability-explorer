@@ -1,0 +1,60 @@
+{
+  "name": "hwo-habitability-explorer",
+  "version": "1.0.0",
+  "description": "Comprehensive exoplanet habitability assessment platform for NASA's Habitable Worlds Observatory (HWO)",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend && uvicorn app.main:app --reload --host 0.0.0.0 --port 8000",
+    "dev:frontend": "cd frontend && npm start",
+    "build": "cd frontend && npm run build",
+    "start": "cd backend && uvicorn app.main:app --host 0.0.0.0 --port 8000",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "install:all": "npm install && cd frontend && npm install && cd ../backend && pip install -r requirements.txt",
+    "test": "npm run test:backend && npm run test:frontend",
+    "test:backend": "cd backend && python -m pytest",
+    "test:frontend": "cd frontend && npm test",
+    "lint": "npm run lint:backend && npm run lint:frontend",
+    "lint:backend": "cd backend && flake8 .",
+    "lint:frontend": "cd frontend && npm run lint",
+    "format": "npm run format:backend && npm run format:frontend",
+    "format:backend": "cd backend && black .",
+    "format:frontend": "cd frontend && npm run format"
+  },
+  "keywords": [
+    "exoplanet",
+    "habitability",
+    "hwo",
+    "nasa",
+    "astronomy",
+    "space-science",
+    "fastapi",
+    "react",
+    "typescript"
+  ],
+  "author": "HWO Explorer Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0",
+    "python": ">=3.11.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/hwo-habitability-explorer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-org/hwo-habitability-explorer/issues"
+  },
+  "homepage": "https://github.com/your-org/hwo-habitability-explorer#readme",
+  "dependencies": {
+    "@types/papaparse": "^5.3.16",
+    "papaparse": "^5.5.3"
+  }
+}

@@ -1,0 +1,108 @@
+{
+  "model_info": {
+    "training_date": "2025-08-23T01:31:23.845104",
+    "notebook_version": "05_hwo_ml_model_training.ipynb",
+    "dataset_size": 2057,
+    "feature_count": 18,
+    "target_variable": "habitability_score"
+  },
+  "best_models": {
+    "regression": {
+      "algorithm": "XGBoost",
+      "r2_score": 0.9604,
+      "rmse": 0.0217,
+      "cv_score": 0.9399,
+      "model_file": "best_habitability_regressor_xgboost.pkl"
+    },
+    "classification": {
+      "algorithm": "XGBoost",
+      "f1_score": 0.9794,
+      "accuracy": 0.9879,
+      "auc_roc": 0.9984,
+      "model_file": "best_habitability_classifier_xgboost.pkl"
+    }
+  },
+  "features": {
+    "feature_names": [
+      "pl_orbper",
+      "pl_orbsmax",
+      "pl_radj",
+      "pl_bmassj",
+      "pl_orbeccen",
+      "pl_orbincl",
+      "st_teff",
+      "st_mass",
+      "st_rad",
+      "st_dist",
+      "st_optmag",
+      "gaia_gmag",
+      "gaia_dist",
+      "pl_dens_calc",
+      "earth_similarity",
+      "st_luminosity",
+      "habzone_position",
+      "orbital_velocity"
+    ],
+    "feature_count": 18,
+    "preprocessing": "StandardScaler applied",
+    "scaler_file": "feature_scaler_updated.pkl"
+  },
+  "habitability_scoring": {
+    "method": "Scientific multi-factor approach",
+    "factors": [
+      "Planet size (Earth-like preference)",
+      "Stellar temperature (habitable zone)",
+      "Orbital period (stable orbit)",
+      "Planet temperature (liquid water range)",
+      "Stellar brightness (energy considerations)",
+      "Orbital distance (habitable zone position)"
+    ],
+    "score_range": "0.0 to 1.0 (higher = more habitable)"
+  },
+  "performance_summary": {
+    "all_models": {
+      "regression": {
+        "RandomForest": {
+          "r2": 0.9118903386448713,
+          "rmse": 0.03244399798388766
+        },
+        "XGBoost": {
+          "r2": 0.9604468688501496,
+          "rmse": 0.021737672148817222
+        },
+        "NeuralNetwork": {
+          "r2": 0.8178951375105847,
+          "rmse": 0.0466426665384505
+        }
+      },
+      "classification": {
+        "RandomForest": {
+          "f1": 0.9365079365079365,
+          "accuracy": 0.9611650485436893,
+          "auc": 0.9942922374429224
+        },
+        "XGBoost": {
+          "f1": 0.9794238683127572,
+          "accuracy": 0.9878640776699029,
+          "auc": 0.9984018264840183
+        },
+        "NeuralNetwork": {
+          "f1": 0.925,
+          "accuracy": 0.9563106796116505,
+          "auc": 0.9805936073059361
+        }
+      }
+    }
+  },
+  "deployment_notes": {
+    "api_integration": "Models ready for backend API integration",
+    "input_requirements": "Requires scaled numerical features",
+    "output_format": "Regression: 0-1 habitability score, Classification: 0/1 + probability",
+    "dependencies": [
+      "scikit-learn",
+      "xgboost",
+      "pandas",
+      "numpy"
+    ]
+  }
+}

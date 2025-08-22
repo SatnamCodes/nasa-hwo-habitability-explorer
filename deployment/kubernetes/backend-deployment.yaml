@@ -1,0 +1,95 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hwo-backend
+  labels:
+    app: hwo-explorer
+    component: backend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: hwo-explorer
+      component: backend
+  template:
+    metadata:
+      labels:
+        app: hwo-explorer
+        component: backend
+    spec:
+      containers:
+      - name: api
+        image: hwo-explorer/backend:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: hwo-secrets
+              key: api-key
+        - name: JWT_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: hwo-secrets
+              key: jwt-secret
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: hwo-secrets
+              key: database-url
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 15
+          periodSeconds: 20
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hwo-backend-service
+spec:
+  selector:
+    app: hwo-explorer
+    component: backend
+  ports:
+  - port: 80
+    targetPort: 8000
+  type: LoadBalancer
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hwo-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  rules:
+  - host: api.hwo-explorer.com  # Update with your domain
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: hwo-backend-service
+            port:
+              number: 80
+  tls:
+  - hosts:
+    - api.hwo-explorer.com  # Update with your domain
+    secretName: hwo-tls-secret

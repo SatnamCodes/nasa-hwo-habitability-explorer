@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "@mui/x-data-grid": "^8.10.2",
+    "@react-three/drei": "^9.122.0",
+    "@react-three/fiber": "^8.18.0",
+    "axios": "^1.11.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.179.0"
+  }
+}
