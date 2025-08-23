@@ -4,6 +4,9 @@
   "description": "Comprehensive exoplanet habitability assessment platform for NASA's Habitable Worlds Observatory (HWO)",
   "main": "index.js",
   "scripts": {
+    "nasa:deploy": "concurrently \"npm run nasa:backend\" \"npm run nasa:frontend\"",
+    "nasa:backend": "cd backend && python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000",
+    "nasa:frontend": "cd frontend && npm start",
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "dev:backend": "cd backend && uvicorn app.main:app --reload --host 0.0.0.0 --port 8000",
     "dev:frontend": "cd frontend && npm start",

@@ -34,7 +34,6 @@ const Header: React.FC = () => {
     { label: 'Planet Explorer', path: '/planets', icon: <Explore /> },
     { label: '3D Galaxy Map', path: '/galaxy-map', icon: <Timeline /> },
     { label: 'HWO Targets', path: '/hwo-targets', icon: <Timeline /> },
-    { label: 'Mission Planner', path: '/mission-planner', icon: <Settings /> },
   ];
 
   const isActive = (path: string) => location.pathname === path;

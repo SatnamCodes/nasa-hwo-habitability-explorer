@@ -16,7 +16,6 @@ import Dashboard from './pages/Dashboard';
 import PlanetExplorer from './pages/PlanetExplorer';
 import GalaxyMapPage from './pages/GalaxyMapPage';
 import TargetDashboard from './components/hwo/TargetDashboard';
-import MissionPlanner from './components/hwo/MissionPlanner';
 import ObservationSimulator from './components/hwo/ObservationSimulator';
 
 // Create Apple-style minimalist theme
@@ -203,7 +202,6 @@ function App() {
                 <Route path="/galaxy-map" element={<GalaxyMapPage />} />
           <Route path="/planets" element={<PlanetExplorer />} />
                 <Route path="/hwo-targets" element={<TargetDashboard />} />
-                <Route path="/mission-planner" element={<MissionPlanner />} />
                 <Route path="/observation-simulator" element={<ObservationSimulator />} />
               </Routes>
             </main>

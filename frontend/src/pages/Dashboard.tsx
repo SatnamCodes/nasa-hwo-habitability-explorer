@@ -73,13 +73,6 @@ const Dashboard: React.FC = () => {
       color: '#34C759'
     },
     {
-      title: 'Mission Planner',
-      description: 'Plan observation strategies and optimize target selection for HWO',
-      icon: <Settings sx={{ fontSize: 48 }} />,
-      path: '/mission-planner',
-      color: '#FF9500'
-    },
-    {
       title: 'Observation Simulator',
       description: 'Simulate HWO observations and analyze expected data quality',
       icon: <Science sx={{ fontSize: 48 }} />,
