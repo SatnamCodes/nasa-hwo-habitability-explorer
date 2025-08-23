@@ -16,17 +16,6 @@ COPY . .
 # Build the application
 RUN npm run build
 
-# Production stage
-FROM nginx:alpine
-
-# Copy built application from build stage
-COPY --from=build /app/build /usr/share/nginx/html
-
-# Copy custom nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-# Expose port
-EXPOSE 80
 
 # Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["npm", "run", "start"]
