@@ -15,6 +15,8 @@ import Footer from './components/common/Footer';
 import Dashboard from './pages/Dashboard';
 import PlanetExplorer from './pages/PlanetExplorer';
 import GalaxyMapPage from './pages/GalaxyMapPage';
+import PrivacyPage from './pages/PrivacyPage';
+import DocumentationPage from './pages/DocumentationPage';
 import TargetDashboard from './components/hwo/TargetDashboard';
 import ObservationSimulator from './components/hwo/ObservationSimulator';
 
@@ -203,6 +205,8 @@ function App() {
           <Route path="/planets" element={<PlanetExplorer />} />
                 <Route path="/hwo-targets" element={<TargetDashboard />} />
                 <Route path="/observation-simulator" element={<ObservationSimulator />} />
+                <Route path="/privacy" element={<PrivacyPage />} />
+                <Route path="/docs" element={<DocumentationPage />} />
               </Routes>
             </main>
             <Footer />

@@ -50,12 +50,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-org/hwo-habitability-explorer.git"
+    "url": "https://github.com/SatnamCodes/nasa-hwo-habitability-explorer.git"
   },
   "bugs": {
-    "url": "https://github.com/your-org/hwo-habitability-explorer/issues"
+    "url": "https://github.com/SatnamCodes/nasa-hwo-habitability-explorer/issues"
   },
-  "homepage": "https://github.com/your-org/hwo-habitability-explorer#readme",
+  "homepage": "https://github.com/SatnamCodes/nasa-hwo-habitability-explorer#readme",
   "dependencies": {
     "@types/papaparse": "^5.3.16",
     "papaparse": "^5.5.3"

@@ -133,6 +133,8 @@ const Header: React.FC = () => {
             <Fade in={true} timeout={1000}>
               <Box sx={{ display: 'flex', gap: 2 }}>
                 <Button
+                  component={RouterLink}
+                  to="/docs"
                   variant="outlined"
                   size="medium"
                   sx={{

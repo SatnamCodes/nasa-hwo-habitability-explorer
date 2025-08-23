@@ -251,13 +251,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-- **Issues**: [GitHub Issues](https://github.com/your-org/hwo-habitability-explorer/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/your-org/hwo-habitability-explorer/discussions)
-- **Email**: support@hwo-explorer.org
+- **Issues**: [GitHub Issues](https://github.com/SatnamCodes/nasa-hwo-habitability-explorer/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/SatnamCodes/nasa-hwo-habitability-explorer/discussions)
+- **Documentation**: Complete guides available in `/docs` directory
 
 ---
 
 **Built with ❤️ for the advancement of exoplanet science and the search for habitable worlds.**
-=======
-# hwo-habitability-explorer
->>>>>>> b2265f0c5f3dfbe98d91c08a9d283d6ff722b373

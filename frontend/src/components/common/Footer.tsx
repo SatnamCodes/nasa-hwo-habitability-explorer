@@ -71,7 +71,7 @@ const Footer: React.FC = () => {
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
                 <Link
-                  href="https://github.com/your-org/hwo-habitability-explorer"
+                  href="https://github.com/SatnamCodes/nasa-hwo-habitability-explorer"
                   target="_blank"
                   rel="noopener noreferrer"
                   color="inherit"

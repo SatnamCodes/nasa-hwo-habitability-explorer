@@ -418,14 +418,23 @@ const EnhancedTargetDashboard: React.FC = () => {
     }
   });
 
-  // Initialize with sample data
+  // Initialize with empty data - will load sample data only if needed
   useEffect(() => {
     setLoading(true);
+    // Check if we have any real data, if not, load samples after a delay
     setTimeout(() => {
-      setTargets(generateSampleTargets());
+      if (targets.length === 0) {
+        setTargets(generateSampleTargets());
+      }
       setLoading(false);
     }, 1000);
   }, []);
+
+  // Auto-update stats when targets change
+  useEffect(() => {
+    // This ensures stats are recalculated whenever targets data changes
+    // No additional action needed as stats are already computed from targets array
+  }, [targets]);
 
   // Filtered and sorted targets
   const filteredTargets = useMemo(() => {
@@ -598,7 +607,8 @@ const EnhancedTargetDashboard: React.FC = () => {
         }
       }));
 
-      setTargets(prev => [...prev, ...newTargets]);
+      // Replace targets with new data for clean sync, or use [...prev, ...newTargets] to add
+      setTargets(newTargets);
       
       setUploadProgress(100);
       setProcessingStatus(`Successfully processed ${result.results.length} targets!`);
@@ -819,7 +829,7 @@ const EnhancedTargetDashboard: React.FC = () => {
                     Total Targets
                   </Typography>
                   <Typography variant="h4">
-                    {targets.length}
+                    {targets.length || 0}
                   </Typography>
                 </Box>
                 <DataUsage color="primary" sx={{ fontSize: 40 }} />
@@ -837,7 +847,7 @@ const EnhancedTargetDashboard: React.FC = () => {
                     High Priority
                   </Typography>
                   <Typography variant="h4">
-                    {targets.filter(t => t.observationPriority === 'High').length}
+                    {targets.filter(t => t.observationPriority === 'High').length || 0}
                   </Typography>
                 </Box>
                 <Star color="error" sx={{ fontSize: 40 }} />
@@ -855,7 +865,7 @@ const EnhancedTargetDashboard: React.FC = () => {
                     Avg AI Score
                   </Typography>
                   <Typography variant="h4">
-                    {Math.round(targets.reduce((sum, t) => sum + t.characterizationScore, 0) / targets.length) || 0}
+                    {targets.length > 0 ? Math.round(targets.reduce((sum, t) => sum + (t.characterizationScore || 0), 0) / targets.length) : 0}
                   </Typography>
                 </Box>
                 <ModelTraining color="success" sx={{ fontSize: 40 }} />
@@ -873,7 +883,7 @@ const EnhancedTargetDashboard: React.FC = () => {
                     Filtered Results
                   </Typography>
                   <Typography variant="h4">
-                    {filteredTargets.length}
+                    {filteredTargets.length || 0}
                   </Typography>
                 </Box>
                 <Assessment color="info" sx={{ fontSize: 40 }} />
@@ -956,6 +966,31 @@ const EnhancedTargetDashboard: React.FC = () => {
                   onClick={() => setUploadDialog(true)}
                 >
                   Upload CSV
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="warning"
+                  size="small"
+                  onClick={() => {
+                    setTargets([]);
+                    console.log('Data cleared - stats will sync to show 0 targets');
+                  }}
+                  title="Clear all data to see stats sync in real-time"
+                >
+                  Clear Data
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="success"
+                  size="small"
+                  onClick={() => {
+                    const sampleData = generateSampleTargets();
+                    setTargets(sampleData);
+                    console.log(`Loaded ${sampleData.length} sample targets - stats will sync automatically`);
+                  }}
+                  title="Load sample data to test stats synchronization"
+                >
+                  Load Samples
                 </Button>
                 <Button
                   variant="text"
@@ -2050,10 +2085,11 @@ const EnhancedTargetDashboard: React.FC = () => {
       <CSVUpload
         onResult={(data: any) => {
           if (data && data.length > 0) {
-            // Handle successful upload - add targets to existing list
-            setTargets((prevTargets: EnhancedTarget[]) => [...prevTargets, ...data]);
+            // Replace existing targets with uploaded data for clean sync
+            // If you want to add to existing data, use: [...prevTargets, ...data]
+            setTargets(data);
             // Show success notification (you can add snackbar state if needed)
-            console.log(`Successfully uploaded ${data.length} targets`);
+            console.log(`Successfully uploaded ${data.length} targets - stats will sync automatically`);
           } else {
             // Handle error case
             console.error('Upload failed or no data received');
