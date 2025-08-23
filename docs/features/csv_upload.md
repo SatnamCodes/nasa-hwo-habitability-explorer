@@ -650,34 +650,66 @@ const ValidationResults: React.FC<{ validationResult: ValidationResult }> = ({
 };
 ```
 
-### 5. Automated Habitability Scoring
+### Real-Time Inference Processing
 
-**Real-time ML Processing:**
+**Pre-trained Model Application:**
+When users upload CSV files, the system applies pre-trained machine learning models to generate habitability scores:
+
 ```python
 class HabitabilityProcessor:
     def __init__(self):
+        # Load pre-trained models (not retrained on upload)
         self.cdhs_calculator = CDHSCalculator()
-        self.ml_model = joblib.load('models/xgboost_habitability.pkl')
-        self.feature_scaler = joblib.load('models/feature_scaler.pkl')
+        self.ml_model = self.load_pretrained_model('models/xgboost_habitability.pkl')
+        self.feature_scaler = self.load_pretrained_scaler('models/feature_scaler.pkl')
     
     def process_batch(self, validated_data: pd.DataFrame) -> pd.DataFrame:
-        """Process entire batch with habitability scoring"""
+        """Apply pre-trained models to uploaded data for inference"""
         
         results = validated_data.copy()
         
-        # Calculate CDHS scores
+        # Calculate CDHS scores using established algorithm
         results['cdhs_score'] = validated_data.apply(
             lambda row: self.cdhs_calculator.calculate_score(row.to_dict()),
             axis=1
         )
         
-        # Prepare features for ML model
+        # Prepare features for pre-trained ML model
         ml_features = self._prepare_ml_features(validated_data)
         if ml_features is not None:
-            # Scale features
+            # Apply pre-trained scaler
             scaled_features = self.feature_scaler.transform(ml_features)
             
-            # Get ML predictions
+            # Get predictions from pre-trained model (no retraining)
+            ml_predictions = self.ml_model.predict_proba(scaled_features)[:, 1]
+            results['ml_habitability_score'] = ml_predictions * 100
+            
+            # Confidence estimation from model uncertainty
+            results['prediction_confidence'] = self._calculate_confidence(scaled_features)
+        
+        return results
+    
+    def load_pretrained_model(self, model_path: str):
+        """Load pre-trained model for inference only"""
+        import joblib
+        return joblib.load(model_path)
+    
+    def _calculate_confidence(self, features):
+        """Calculate prediction confidence without retraining"""
+        # Use ensemble variance or model-specific uncertainty metrics
+        return self.ml_model.predict_proba(features).max(axis=1) * 100
+```
+
+**Key Points:**
+- **No Model Retraining**: Uploaded data is used for inference only
+- **Consistent Predictions**: Pre-trained models ensure reproducible results
+- **Fast Processing**: Inference is much faster than training
+- **Scientific Validity**: Models are trained on carefully curated datasets
+
+**Model Training vs Inference:**
+- **Training**: Happens offline using validated scientific datasets in Jupyter notebooks
+- **Inference**: Happens in real-time when processing uploaded CSV files
+- **Updates**: Model updates occur through scheduled retraining with curated data, not automatic retraining on uploads
             results['ml_prediction'] = self.ml_model.predict_proba(scaled_features)[:, 1]
             results['prediction_confidence'] = self.ml_model.predict_proba(scaled_features).max(axis=1)
         
