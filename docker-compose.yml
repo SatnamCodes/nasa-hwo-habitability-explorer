@@ -4,9 +4,9 @@ services:
     image: postgres:15-alpine
     container_name: hwo_postgres
     environment:
-      POSTGRES_DB: hwo_explorer
-      POSTGRES_USER: hwo_user
-      POSTGRES_PASSWORD: hwo_password
+      POSTGRES_DB: $POSTGRES_DB
+      POSTGRES_USER: $POSTGRES_USER
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./data_pipeline/database/migrations:/docker-entrypoint-initdb.d
@@ -25,15 +25,14 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: hwo_backend
     environment:
-      DATABASE_URL: postgresql://hwo_user:hwo_password@postgres:5432/hwo_explorer
-      SECRET_KEY: your-secret-key-change-in-production
+      POSTGRES_DB: $POSTGRES_DB
+      POSTGRES_USER: $POSTGRES_USER
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
     ports:
       - "8000:8000"
     depends_on:
-      postgres:
-        condition: service_healthy
+      - postgres
     networks:
       - hwo_network
     volumes:
@@ -45,11 +44,8 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: hwo_frontend
     ports:
       - "8000:8000"
-    environment:
-      REACT_APP_API_URL: http://localhost:8000
     depends_on:
       - backend
     networks:
