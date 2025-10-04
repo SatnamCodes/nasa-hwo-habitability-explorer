@@ -251,8 +251,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-- **Issues**: [GitHub Issues](https://github.com/SatnamCodes/nasa-hwo-habitability-explorer/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/SatnamCodes/nasa-hwo-habitability-explorer/discussions)
+- **Issues**: [GitHub Issues](https://github.com/username/nasa-hwo-habitability-explorer/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/username/nasa-hwo-habitability-explorer/discussions)
 - **Documentation**: Complete guides available in `/docs` directory
 
 ---
