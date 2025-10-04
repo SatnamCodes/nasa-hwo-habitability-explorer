@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api import planets, predictions, hwo_targets
 from app.api import observability
 from app.api import hwo_scoring
+from app.api import nasa_data
 from app.config import settings
 from app.utils import model_loader
 
@@ -27,6 +28,7 @@ app.include_router(predictions.router, prefix="/api/v1/predictions", tags=["pred
 app.include_router(hwo_targets.router, prefix="/api/v1/hwo-targets", tags=["hwo-targets"])
 app.include_router(observability.router, prefix="/api/v1/observability", tags=["observability"])
 app.include_router(hwo_scoring.router, tags=["HWO AI/ML Scoring"])
+app.include_router(nasa_data.router, prefix="/api/v1/nasa", tags=["NASA Data"])
 
 
 @app.on_event('startup')

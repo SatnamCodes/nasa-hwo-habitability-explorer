@@ -27,14 +27,10 @@ class Settings(BaseModel):
     ALGORITHM: str = Field(default="HS256", description="JWT algorithm")
     ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(default=30, description="Token expiry time")
     
-    # External API URLs
-    NASA_EXOPLANET_URL: str = Field(
-        default="https://exoplanetarchive.ipac.caltech.edu/TAP/sync",
-        description="NASA Exoplanet Archive API URL"
-    )
-    GAIA_URL: str = Field(
-        default="https://gea.esac.esa.int/tap-server/tap",
-        description="GAIA catalog API URL"
+    # External API settings
+    NASA_API_KEY: str = Field(
+        default="DEMO_KEY",
+        description="NASA Exoplanet Archive API key"
     )
     
     # Model settings
@@ -80,3 +76,7 @@ if os.path.exists(".env"):
     model_path = os.getenv("MODEL_PATH")
     if model_path:
         settings.MODEL_PATH = model_path
+        
+    nasa_api_key = os.getenv("NASA_API_KEY")
+    if nasa_api_key:
+        settings.NASA_API_KEY = nasa_api_key
