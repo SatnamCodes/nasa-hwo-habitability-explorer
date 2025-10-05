@@ -89,6 +89,28 @@ cover/
 
 # Translations
 *.mo
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# === Notebook Artifacts ===
+.ipynb_checkpoints/
+**/.ipynb_checkpoints/
+
+# === Model Artifacts (keep only curated readme) ===
+*.pkl
+*.model
+*.h5
+*.joblib
+data_science/models/*.pkl
+backend/app/models/*.pkl
+**/models/*.pkl
+!**/models/README.md
 *.pot
 
 # Django stuff:
@@ -375,4 +397,27 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# === LaTeX Build Artifacts ===
+docs/latex/*.aux
+docs/latex/*.log
+docs/latex/*.out
+docs/latex/*.toc
+docs/latex/*.lof
+docs/latex/*.lot
+docs/latex/*.synctex.gz
+
+# === Generated Composite Bodies (can regenerate) ===
+docs/latex/*_body.tex
+
+# === Notebook Derived Figures (keep images, ignore inventory) ===
+docs/images/relations/figure_inventory.json
+
+# === Misc ===
+*.pid
+*.seed
+*.pid.lock
+*.tgz
+
+# END CLEAN CONSOLIDATED GITIGNORE
 >>>>>>> b2265f0c5f3dfbe98d91c08a9d283d6ff722b373
