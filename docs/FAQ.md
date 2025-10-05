@@ -471,11 +471,11 @@ All concerns are addressed promptly following responsible disclosure practices.
 - **User Manual:** [Complete usage guide](user_manual.md)
 - **Technical Documentation:** [API and development docs](api/README.md)
 - **Video Tutorials:** [Demo presentations](presentation/)
-- **GitHub Repository:** [Source code and issues](https://github.com/SatnamCodes/nasa-hwo-habitability-explorer)
+- **GitHub Repository:** [Source code and issues](https://github.com/username/nasa-hwo-habitability-explorer)
 
 ### Staying Updated
 - **Release Notes:** [Version history and changes](releases/)
-- **GitHub Discussions:** [Community discussions and announcements](https://github.com/SatnamCodes/nasa-hwo-habitability-explorer/discussions)
+- **GitHub Discussions:** [Community discussions and announcements](https://github.com/username/nasa-hwo-habitability-explorer/discussions)
 - **NASA HWO Updates:** [Official mission information](https://www.nasa.gov/hwo)
 
 ### Scientific Background Resources

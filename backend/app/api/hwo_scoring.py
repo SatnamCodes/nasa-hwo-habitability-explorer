@@ -6,7 +6,11 @@ Provides endpoints for AI/ML-based exoplanet characterization scoring
 from fastapi import APIRouter, HTTPException, UploadFile, File, Depends
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
-import pandas as pd
+import csv as _csv
+try:  # optional heavy dependency
+    import pandas as pd  # type: ignore
+except Exception:  # noqa: broad-except
+    pd = None  # fallback mode
 import numpy as np
 import pickle
 import json
@@ -684,136 +688,163 @@ async def score_multiple_targets(request: BatchScoringRequest):
 
 @router.post("/upload")
 async def upload_csv_targets(file: UploadFile = File(...)):
-    """Upload and score targets from CSV file with intelligent column detection"""
+    """Upload and score targets from CSV file.
+    Falls back to a lightweight parser if pandas is unavailable.
+    """
     if not file.filename.endswith('.csv'):
         raise HTTPException(status_code=400, detail="File must be a CSV")
-    
+
+    content = await file.read()
+    if not content or len(content) < 5:
+        raise HTTPException(status_code=400, detail="CSV file is empty")
+
+    using_pandas = pd is not None
     try:
-        # Read CSV content
-        content = await file.read()
-        df = pd.read_csv(StringIO(content.decode('utf-8')))
-        
-        if df.empty:
-            raise HTTPException(status_code=400, detail="CSV file is empty")
-        
-        # Detect and map columns intelligently
-        headers = df.columns.tolist()
+        if using_pandas:
+            # UTF-8 with optional BOM removal
+            df = pd.read_csv(StringIO(content.decode('utf-8-sig')))
+            if df.empty:
+                raise HTTPException(status_code=400, detail="CSV file is empty")
+            headers = df.columns.tolist()
+        else:
+            # Minimal fallback parsing
+            text = content.decode('utf-8', errors='replace')
+            lines = [l for l in text.splitlines() if l.strip()]
+            if len(lines) < 2:
+                raise HTTPException(status_code=400, detail="CSV file is empty")
+            headers = [h.strip().strip('"').strip("\ufeff") for h in lines[0].split(',')]
+            rows = []
+            for line in lines[1:]:
+                parts = [p.strip().strip('"') for p in line.split(',')]
+                if len(parts) == 1 and parts[0] == '':
+                    continue
+                row_dict = {headers[i]: parts[i] if i < len(parts) else '' for i in range(len(headers))}
+                rows.append(row_dict)
+            # Create a light pseudo-df interface
+            class _LightDF:
+                def __init__(self, headers, rows):
+                    self._headers = headers
+                    self._rows = rows
+                @property
+                def columns(self):
+                    return self._headers
+                def iterrows(self):
+                    for idx, r in enumerate(self._rows):
+                        yield idx, r
+                @property
+                def empty(self):
+                    return len(self._rows) == 0
+                def __len__(self):
+                    return len(self._rows)
+            df = _LightDF(headers, rows)
+
         detected_mapping, confidence_scores = ColumnDetector.detect_columns(headers)
-        
-        # Check if we have enough required fields
         required_fields = ['name', 'distance', 'star_type', 'planet_radius', 'orbital_period', 'stellar_mass']
-        missing_required = [field for field in required_fields if field not in detected_mapping]
-        
+        missing_required = [f for f in required_fields if f not in detected_mapping]
+
         if missing_required:
-            # Provide detailed suggestions
             suggestions = ColumnDetector.get_mapping_suggestions(headers)
-            raise HTTPException(
-                status_code=400, 
-                detail={
-                    "message": f"Missing required columns: {', '.join(missing_required)}",
-                    "detected_mapping": detected_mapping,
-                    "suggestions": suggestions['suggestions'],
-                    "unmapped_headers": suggestions['unmapped_headers'],
-                    "available_columns": headers
-                }
-            )
-        
-        # Convert DataFrame rows to ExoplanetTarget objects using detected mapping
+            raise HTTPException(status_code=400, detail={
+                'message': f"Missing required columns: {', '.join(missing_required)}",
+                'detected_mapping': detected_mapping,
+                'suggestions': suggestions['suggestions'],
+                'unmapped_headers': suggestions['unmapped_headers'],
+                'available_columns': headers,
+                'using_pandas': using_pandas
+            })
+
         targets = []
         conversion_errors = []
-        original_rows = []  # Store original data
-        
+        original_rows = []
+
         for index, row in df.iterrows():
             try:
-                # Use detected mapping to extract values
-                target_data = {}
+                # unify access (row is Series or dict)
+                getter = (lambda c: row[c]) if using_pandas else (lambda c: row.get(c))
                 original_row_data = {}
-                
-                # Store original row data
-                for col in df.columns:
-                    if pd.notna(row[col]):
-                        original_row_data[col] = row[col]
-                
+                for col in headers:
+                    try:
+                        val = getter(col)
+                        if using_pandas:
+                            import math
+                            if pd.isna(val):  # type: ignore
+                                continue
+                        if val is not None and str(val).strip() != '':
+                            original_row_data[col] = val
+                    except Exception:
+                        continue
+
+                target_data = {}
                 for our_field, csv_column in detected_mapping.items():
-                    if csv_column in df.columns and pd.notna(row[csv_column]):
-                        target_data[our_field] = row[csv_column]
-                
-                # Create target with proper type conversion
-                # Normalize units where necessary
+                    try:
+                        val = getter(csv_column)
+                        if using_pandas:
+                            if pd.isna(val):  # type: ignore
+                                continue
+                        if val is not None and str(val).strip() != '':
+                            target_data[our_field] = val
+                    except Exception:
+                        continue
+
                 planet_radius_value = float(target_data.get('planet_radius', 0)) if 'planet_radius' in target_data else 0.0
                 radius_col = detected_mapping.get('planet_radius')
-                if radius_col:
-                    col_lower = str(radius_col).lower()
-                    # If the source column indicates Earth radii, convert to Jupiter radii
-                    if 'earth' in col_lower:
-                        planet_radius_value = planet_radius_value / 11.2
+                if radius_col and 'earth' in str(radius_col).lower():
+                    # If source column name suggests Earth radii, convert to Jupiter radii
+                    planet_radius_value = planet_radius_value / 11.2 if planet_radius_value else 0.0
 
                 target = ExoplanetTarget(
                     name=str(target_data.get('name', f'Target-{index+1}')),
-                    distance=float(target_data.get('distance', 0)),
+                    distance=float(target_data.get('distance', 0) or 0),
                     star_type=str(target_data.get('star_type', 'Unknown')),
                     planet_radius=float(planet_radius_value),
-                    orbital_period=float(target_data.get('orbital_period', 0)),
-                    stellar_mass=float(target_data.get('stellar_mass', 1)),
-                    planet_mass=float(target_data['planet_mass']) if 'planet_mass' in target_data and target_data['planet_mass'] else None,
-                    temperature=float(target_data['temperature']) if 'temperature' in target_data and target_data['temperature'] else None,
-                    discovery_year=int(target_data['discovery_year']) if 'discovery_year' in target_data and target_data['discovery_year'] else None,
+                    orbital_period=float(target_data.get('orbital_period', 0) or 0),
+                    stellar_mass=float(target_data.get('stellar_mass', 1) or 1),
+                    planet_mass=float(target_data['planet_mass']) if 'planet_mass' in target_data and str(target_data['planet_mass']).strip() != '' else None,
+                    temperature=float(target_data['temperature']) if 'temperature' in target_data and str(target_data['temperature']).strip() != '' else None,
+                    discovery_year=int(float(target_data['discovery_year'])) if 'discovery_year' in target_data and str(target_data['discovery_year']).strip() != '' else None,
                     detection_method=str(target_data.get('detection_method')) if 'detection_method' in target_data else None,
                     data_quality=str(target_data.get('data_quality', 'Good'))
                 )
                 targets.append(target)
                 original_rows.append(original_row_data)
-                
-            except (ValueError, TypeError, KeyError) as e:
-                conversion_errors.append(f"Row {index+1}: {str(e)}")
-                if len(conversion_errors) > 10:  # Limit error reporting
-                    conversion_errors.append("... and more errors")
+            except (ValueError, TypeError) as e:
+                conversion_errors.append(f"Row {index+1}: {e}")
+                if len(conversion_errors) > 15:
+                    conversion_errors.append('... more errors omitted')
                     break
-        
+
         if not targets:
-            raise HTTPException(
-                status_code=400, 
-                detail=f"No valid targets could be processed. Errors: {'; '.join(conversion_errors[:5])}"
-            )
-        
-        # Score all targets with original data
+            raise HTTPException(status_code=400, detail=f"No valid targets could be processed. Errors: {'; '.join(conversion_errors[:6])}")
+
         results = []
         errors = []
-        
         for i, target in enumerate(targets):
             try:
                 result = scoring_engine.score_target(target)
-                # Add original data to the result
-                if i < len(original_rows):
-                    result.original_data = original_rows[i]
+                result.original_data = original_rows[i] if i < len(original_rows) else None
                 results.append(result)
             except Exception as e:
-                logger.error(f"Failed to score target {target.name}: {str(e)}")
-                errors.append({"target": target.name, "error": str(e)})
+                errors.append({'target': target.name, 'error': str(e)})
 
         processing_summary = {
-            "total_targets": len(targets),
-            "successful_scores": len(results),
-            "failed_scores": len(errors),
-            "errors": errors,
+            'total_targets': len(targets),
+            'successful_scores': len(results),
+            'failed_scores': len(errors),
+            'errors': errors,
             'detected_mapping': detected_mapping,
             'confidence_scores': confidence_scores,
             'conversion_errors': conversion_errors,
-            'rows_processed': len(df),
-            'valid_targets': len(targets)
+            'rows_processed': len(targets),
+            'valid_targets': len(results),
+            'using_pandas': using_pandas
         }
 
         return BatchScoringResponse(results=results, processing_summary=processing_summary)
-        
-    except pd.errors.EmptyDataError:
-        raise HTTPException(status_code=400, detail="CSV file is empty")
-    except pd.errors.ParserError as e:
-        raise HTTPException(status_code=400, detail=f"CSV parsing error: {str(e)}")
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"CSV upload error: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Upload processing failed: {str(e)}")
+        logger.error(f"CSV upload error: {e}")
+        raise HTTPException(status_code=500, detail=f"Upload processing failed: {e}")
 
 @router.post("/validate-columns", response_model=ColumnMappingResponse)
 async def validate_csv_columns(request: ColumnMappingRequest):

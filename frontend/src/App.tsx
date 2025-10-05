@@ -2,6 +2,10 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import LightModeIcon from '@mui/icons-material/LightMode';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 // Import global styles
@@ -9,6 +13,7 @@ import './styles/globals.css';
 
 // Components
 import Header from './components/common/Header';
+import { ColorModeProvider, useColorMode } from './components/common/ColorModeContext';
 import Footer from './components/common/Footer';
 
 // Pages
@@ -18,9 +23,10 @@ import GalaxyMapPage from './pages/GalaxyMapPage';
 import PrivacyPage from './pages/PrivacyPage';
 import DocumentationPage from './pages/DocumentationPage';
 import TargetDashboard from './components/hwo/TargetDashboard';
+import FindingsPage from './pages/FindingsPage';
 import ObservationSimulator from './components/hwo/ObservationSimulator';
 
-// Create Apple-style minimalist theme
+// Base (light) theme - actual mode switching handled in ColorModeProvider
 const theme = createTheme({
   palette: {
     mode: 'light',
@@ -183,17 +189,31 @@ const queryClient = new QueryClient({
   },
 });
 
+const ColorModeToggle: React.FC = () => {
+  const { mode, toggleColorMode } = useColorMode();
+  return (
+    <Tooltip title={mode === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}>
+      <IconButton onClick={toggleColorMode} size="large" sx={{ ml: 1 }}>
+        {mode === 'light' ? <DarkModeIcon /> : <LightModeIcon />}
+      </IconButton>
+    </Tooltip>
+  );
+};
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider theme={theme}>
+      <ColorModeProvider>
         <CssBaseline />
         <Router>
           <div className="App" style={{ 
-            minHeight: '100vh',
-            background: 'linear-gradient(135deg, #ffffff 0%, #fafafa 100%)'
+            minHeight: '100vh'
           }}>
             <Header />
+            {/* Floating color mode toggle */}
+            <div style={{ position: 'fixed', top: 90, right: 24, zIndex: 1300 }}>
+              <ColorModeToggle />
+            </div>
             <main style={{ 
               minHeight: 'calc(100vh - 140px)', 
               padding: '0',
@@ -202,17 +222,18 @@ function App() {
               <Routes>
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/galaxy-map" element={<GalaxyMapPage />} />
-          <Route path="/planets" element={<PlanetExplorer />} />
+                <Route path="/planets" element={<PlanetExplorer />} />
                 <Route path="/hwo-targets" element={<TargetDashboard />} />
                 <Route path="/observation-simulator" element={<ObservationSimulator />} />
                 <Route path="/privacy" element={<PrivacyPage />} />
                 <Route path="/docs" element={<DocumentationPage />} />
+                <Route path="/findings" element={<FindingsPage />} />
               </Routes>
             </main>
             <Footer />
           </div>
         </Router>
-      </ThemeProvider>
+      </ColorModeProvider>
     </QueryClientProvider>
   );
 }

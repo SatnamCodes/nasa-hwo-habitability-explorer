@@ -1,0 +1,64 @@
+{
+  "version": "2.0_physics_enhanced",
+  "created_at": "2025-10-05T00:55:03.799941",
+  "description": "Physics-enhanced habitability models using 46 astrophysics-based features",
+  "physics_features": {
+    "count": 5,
+    "sources": [
+      "Stellar Physics (Kopparapu 2013-2014)",
+      "Atmospheric Physics (Jeans escape, scale heights)",
+      "Orbital Dynamics (Peale 1979 tidal heating)",
+      "Habitability Metrics (ESI, composite scores)"
+    ],
+    "feature_list": [
+      "pl_radj",
+      "pl_bmassj",
+      "pl_orbper",
+      "st_teff",
+      "st_mass"
+    ]
+  },
+  "regression_model": {
+    "type": "RandomForest",
+    "file": "best_habitability_regressor_physics_v2.pkl",
+    "performance": {
+      "r2_score": 0.984440675504766,
+      "metric": "R\u00b2 Score"
+    }
+  },
+  "classification_model": {
+    "type": "RandomForest",
+    "file": "best_habitability_classifier_physics_v2.pkl",
+    "performance": {
+      "f1_score": 0.9844559585492227,
+      "metric": "F1 Score"
+    }
+  },
+  "preprocessing": {
+    "scaler": "StandardScaler",
+    "scaler_file": "feature_scaler_physics_v2.pkl",
+    "missing_value_strategy": "median_imputation",
+    "outlier_removal": "IQR_3x"
+  },
+  "target": {
+    "name": "habitability_score",
+    "type": "continuous",
+    "range": [
+      0.0,
+      1.0
+    ],
+    "threshold_habitable": 0.5
+  },
+  "dataset_info": {
+    "training_samples": 1884,
+    "test_samples": 472,
+    "total_planets": 2356
+  },
+  "backend_integration": {
+    "csv_upload_compatible": true,
+    "requires_physics_features": true,
+    "api_endpoint": "/api/hwo-scoring/predict",
+    "input_format": "planet_parameters",
+    "output_format": "habitability_score_with_confidence"
+  }
+}

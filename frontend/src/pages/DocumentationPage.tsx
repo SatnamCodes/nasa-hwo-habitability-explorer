@@ -138,7 +138,7 @@ const DocumentationPage: React.FC = () => {
   const handleDocumentClick = (file: string) => {
     // In a real implementation, this would fetch and display the markdown file
     // For now, we'll open the GitHub link to the file
-    const githubBase = 'https://github.com/SatnamCodes/nasa-hwo-habitability-explorer/blob/master/docs/';
+    const githubBase = 'https://github.com/your-username/nasa-hwo-habitability-explorer/blob/master/docs/';
     window.open(githubBase + file, '_blank');
   };
 
@@ -202,7 +202,7 @@ const DocumentationPage: React.FC = () => {
           <Grid item>
             <Tooltip title="View on GitHub">
               <IconButton
-                onClick={() => window.open('https://github.com/SatnamCodes/nasa-hwo-habitability-explorer', '_blank')}
+                onClick={() => window.open('https://github.com/your-username/nasa-hwo-habitability-explorer', '_blank')}
                 sx={{ ml: 1 }}
               >
                 <GitHub />
@@ -363,7 +363,7 @@ const DocumentationPage: React.FC = () => {
         <Typography variant="body2" color="text.secondary">
           Documentation is continuously updated. For the latest information, visit our{' '}
           <Link 
-            href="https://github.com/SatnamCodes/nasa-hwo-habitability-explorer" 
+            href="https://github.com/your-username/nasa-hwo-habitability-explorer" 
             target="_blank"
             rel="noopener noreferrer"
           >

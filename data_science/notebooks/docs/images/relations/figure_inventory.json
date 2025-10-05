@@ -1,0 +1,12 @@
+[
+  "01_feature_distributions.png",
+  "02_correlation_matrix.png",
+  "03_physics_vs_habitability_scatter_grid.png",
+  "04_binned_trends.png",
+  "05_score_class_separation.png",
+  "06_temp_vs_axis.png",
+  "07_escape_velocity_vs_habitability.png",
+  "08_esi_by_class.png",
+  "09_tidal_lock_vs_habitability.png",
+  "10_interpretive_rf_importance.png"
+]

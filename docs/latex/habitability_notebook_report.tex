@@ -1,0 +1,234 @@
+% Habitability Notebook Report
+% Auto-generated LaTeX document explaining model training visuals
+\documentclass[11pt,a4paper]{article}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{caption}
+\usepackage[strings]{underscore}
+% Allow conditional inclusion of figures
+% \IfFileExists is provided by LaTeX kernel; define a helper macro
+% Safe include macro (improved to avoid underscore issues when missing)
+\newcommand{\safeinclude}[3][0.85\textwidth]{%
+  \IfFileExists{#2}{\includegraphics[width=#1]{#2}}{\fbox{\parbox{0.8\linewidth}{\centering Missing figure: \\texttt{\\detokenize{#2}}\\\\#3}}}\relax}
+\geometry{margin=1in}
+\hypersetup{colorlinks=true,linkcolor=blue,urlcolor=cyan}
+
+\title{Habitability Machine Learning Notebook Visual Report}
+\author{NASA HWO Habitability Explorer}
+\date{\today}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Purpose}
+This report explains, in very simple language, every visualization produced by the habitability model training notebook. It also documents why each model was trained, why certain parameters (hyperparameters) were selected, and how to interpret the results.
+
+\section{Physics-Based Features Overview}
+For every planet we compute physically motivated features:
+\begin{itemize}
+  \item Stellar radiation, luminosity, and habitable zone boundaries.
+  \item Planetary temperature (equilibrium approximation), density, gravity.
+  \item Atmospheric escape likelihood via Jeans parameters and scale heights.
+  \item Orbital effects: tidal heating, tidal locking likelihood.
+  \item Composite indices: Earth Similarity Index (ESI), habitability composite score.
+\end{itemize}
+These serve as inputs to regression (continuous habitability score) and classification (habitable vs non-habitable) models.
+
+\section{Key Equations (Simplified)}
+\subsection{Equilibrium Temperature}
+\begin{equation}
+T_{eq} = T_{\star} \sqrt{\frac{R_{\star}}{2a}} (1 - A)^{1/4}
+\end{equation}
+where $T_{\star}$ is stellar effective temperature, $R_{\star}$ stellar radius, $a$ semi-major axis, and $A$ the Bond albedo.
+
+\subsection{Insolation Flux}
+\begin{equation}
+S = \frac{L_{\star}}{4\pi a^2}
+\end{equation}
+Scaled to Earth units to estimate relative energy input.
+
+\subsection{Escape Velocity (Ratio)}
+\begin{equation}
+\frac{v_{esc}}{v_{esc,\oplus}} = \sqrt{ \frac{M/M_{\oplus}}{R/R_{\oplus}} }
+\end{equation}
+Higher escape velocity improves atmospheric retention.
+
+\section{Saved Figures Reference}
+All figures are expected in: \texttt{docs/images/habitability/}. If a figure is missing, re-run the notebook after enabling the export hooks.
+
+\subsection{Sample Physics Features (Fig. 1)}
+\begin{figure}[H]
+  \centering
+  \safeinclude[0.85\textwidth]{../images/habitability/01_sample_physics_features.png}{Sample physics feature table}
+  \caption{Sample of generated physics features per planet.}
+\end{figure}
+Interpretation: Rows = planets, columns = physical or derived properties.
+
+\subsection{Physics Feature Statistics (Fig. 2)}
+(Printed summary; optionally export as an image.) Shows distribution of habitability classes, habitable zone membership, tidal locking counts, and Earth similarity frequency.
+
+\subsection{Random Forest Regression Scatter (Fig. 3)}
+\begin{figure}[H]
+  \centering
+  \safeinclude[0.7\textwidth]{../images/habitability/03_rf_regression_scatter.png}{Random Forest regression scatter}
+  \caption{Predicted vs actual habitability regression scores (Random Forest). Ideally points lie on the $y=x$ line.}
+\end{figure}
+Deviation from the diagonal indicates prediction error.
+
+\subsection{Random Forest Residuals (Fig. 4)}
+\begin{figure}[H]
+  \centering
+  \safeinclude[0.7\textwidth]{../images/habitability/04_rf_residuals.png}{Random Forest residuals}
+  \caption{Residuals vs predicted values. A random cloud around zero indicates no strong bias.}
+\end{figure}
+
+\subsection{Random Forest Feature Importance (Fig. 5)}
+\begin{figure}[H]
+  \centering
+  \safeinclude[0.85\textwidth]{../images/habitability/05_rf_feature_importance.png}{Random Forest feature importance}
+  \caption{Top physics features contributing to Random Forest regression decisions.}
+\end{figure}
+
+\subsection{Random Forest Confusion Matrix (Fig. 6)}
+\begin{figure}[H]
+  \centering
+  \safeinclude[0.55\textwidth]{../images/habitability/06_rf_confusion_matrix.png}{Random Forest confusion matrix}
+  \caption{Classification confusion matrix. Diagonal cells are correct predictions.}
+\end{figure}
+
+\subsection{ROC Curve (Partial Comparison) (Fig. 7)}
+\begin{figure}[H]
+  \centering
+  \safeinclude[0.7\textwidth]{../images/habitability/07_roc_comparison_partial.png}{Partial ROC comparison}
+  \caption{ROC comparison showing trade-off between true positive and false positive rates.}
+\end{figure}
+
+\subsection{Model Comparison Bars RF vs XGBoost (Fig. 8)}
+\begin{figure}[H]
+  \centering
+  \safeinclude[0.75\textwidth]{../images/habitability/08_rf_xgb_bar_compare.png}{RF vs XGBoost comparison bars}
+  \caption{Regression and classification metrics for Random Forest vs XGBoost.}
+\end{figure}
+
+\subsection{XGBoost Regression Scatter (Fig. 9)}
+\begin{figure}[H]
+  \centering
+  \safeinclude[0.7\textwidth]{../images/habitability/09_xgb_regression_scatter.png}{XGBoost regression scatter}
+  \caption{Predicted vs actual scores (XGBoost). Enables comparison with Random Forest.}
+\end{figure}
+
+\subsection{XGBoost Residuals (Fig. 10)}
+\begin{figure}[H]
+  \centering
+  \safeinclude[0.7\textwidth]{../images/habitability/10_xgb_residuals.png}{XGBoost residuals}
+  \caption{Residual dispersion for XGBoost regression.}
+\end{figure}
+
+\subsection{XGBoost Feature Importance (Fig. 11)}
+\begin{figure}[H]
+  \centering
+  \safeinclude[0.85\textwidth]{../images/habitability/11_xgb_feature_importance.png}{XGBoost feature importance}
+  \caption{XGBoost gain-based importance for top features.}
+\end{figure}
+
+\subsection{XGBoost Confusion Matrix (Fig. 12a)}
+\begin{figure}[H]
+  \centering
+  \safeinclude[0.55\textwidth]{../images/habitability/12_xgb_confusion_matrix.png}{XGBoost confusion matrix}
+  \caption{Classification performance breakdown for XGBoost.}
+\end{figure}
+
+\subsection{XGBoost ROC Overlay (Fig. 12b)}
+\begin{figure}[H]
+  \centering
+  \safeinclude[0.65\textwidth]{../images/habitability/12b_xgb_roc_overlay.png}{XGBoost ROC overlay}
+  \caption{ROC overlay including Random Forest benchmark.}
+\end{figure}
+
+\subsection{Neural Network Loss Curves (Fig. 13)}
+\begin{figure}[H]
+  \centering
+  \safeinclude[0.75\textwidth]{../images/habitability/13_nn_loss_curves.png}{Neural Network loss curves}
+  \caption{Training loss evolution for regression and classification neural networks.}
+\end{figure}
+Early stopping prevents overfitting when validation loss plateaus.
+
+\subsection{Neural Network Regression Scatter (Fig. 14a)}
+\begin{figure}[H]
+  \centering
+  \safeinclude[0.7\textwidth]{../images/habitability/14_nn_regression_scatter.png}{Neural Network regression scatter}
+  \caption{Neural Network predicted vs actual regression scores.}
+\end{figure}
+
+\subsection{Neural Network Confusion Matrix (Fig. 14b)}
+\begin{figure}[H]
+  \centering
+  \safeinclude[0.55\textwidth]{../images/habitability/14b_nn_confusion_matrix.png}{Neural Network confusion matrix}
+  \caption{Neural Network classification confusion matrix.}
+\end{figure}
+
+\subsection{All Models ROC Curve (Fig. 15)}
+\begin{figure}[H]
+  \centering
+  \safeinclude[0.75\textwidth]{../images/habitability/15_all_models_roc.png}{All models ROC}
+  \caption{ROC comparison across Random Forest, XGBoost, and Neural Network.}
+\end{figure}
+
+\subsection{All Models Bar Comparison (Fig. 16)}
+\begin{figure}[H]
+  \centering
+  \safeinclude[0.85\textwidth]{../images/habitability/16_all_models_bar_compare.png}{All models bar comparison}
+  \caption{Unified comparison of R$^2$, F1, and AUC metrics.}
+\end{figure}
+
+\section{Model Selection Rationale}
+\subsection{Random Forest}
+Robust baseline; handles mixed feature scales; gives intuitive feature importance. Tuned with deeper trees (max\_depth=15) and more estimators (200) for stability.
+
+\subsection{XGBoost}
+Gradient boosting excels on structured/tabular data. Regularization (\texttt{reg\_alpha}, \texttt{reg\_lambda}) and subsampling reduce overfitting; many estimators with a small learning rate refine residual errors iteratively.
+
+\subsection{Neural Network}
+Deeper architecture (128-64-32-16) extracts hierarchical patterns; adaptive learning rate plus early stopping fosters convergence without memorization.
+
+\section{Overfitting Controls}
+\begin{itemize}
+  \item Depth limits and min samples in trees.
+  \item Subsampling rows and columns in XGBoost.
+  \item L1/L2 regularization (boosting + NN).
+  \item Early stopping (NN) and cross-validation (all models).
+\end{itemize}
+
+\section{Future Enhancements}
+\begin{itemize}
+  \item Calibrated probability outputs.
+  \item Ensemble stacking of top models.
+  \item Incorporation of atmospheric spectral lines.
+  \item Drift monitoring as new exoplanet catalog updates arrive.
+\end{itemize}
+
+\section{Quick Glossary}
+\begin{description}
+  \item[R$^2$] Proportion of variance explained by regression model.
+  \item[F1 Score] Harmonic mean of precision and recall.
+  \item[AUC] Area under ROC; ranking quality across thresholds.
+  \item[Residual] Difference between true and predicted value.
+  \item[Feature Importance] Estimate of how much a variable influences predictions.
+\end{description}
+
+\section{Summary}
+We combined physics-derived features with three ML model families. Each visualization validates either data quality, model learning behavior, or predictive skill. The multi-model approach boosts confidence and provides complementary perspectives: explainability (Random Forest), accuracy (XGBoost), and interaction depth (Neural Network).
+
+\vfill
+\begin{center}
+\textit{Generated automatically. Regenerate after retraining to refresh metrics and figures.}
+\end{center}
+
+\end{document}

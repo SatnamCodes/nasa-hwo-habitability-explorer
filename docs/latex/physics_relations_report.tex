@@ -1,0 +1,148 @@
+% Physics–Habitability Relations (Refined Academic Manuscript)
+\documentclass[11pt,a4paper]{article}
+\usepackage{geometry}\geometry{margin=1in}
+\usepackage{amsmath,amssymb}
+\usepackage{siunitx}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{microtype}
+\usepackage{caption}
+\usepackage[strings]{underscore}
+\usepackage{hyperref}
+\usepackage{csquotes}
+\hypersetup{colorlinks=true,linkcolor=blue,urlcolor=cyan,citecolor=teal}
+\newcommand{\safeinclude}[2]{\IfFileExists{#1}{\includegraphics[width=0.8\textwidth]{#1}}{\fbox{\parbox{0.72\textwidth}{\centering Missing figure: \texttt{\detokenize{#1}}\\#2}}}}
+  \title{Linking Foundational Exoplanetary Physics to Habitability Inference}
+\author{NASA HWO Habitability Explorer Project}
+\date{\today}
+\begin{document}\maketitle
+\begin{abstract}
+We examine physically derived exoplanet features---including equilibrium temperature, irradiation scaling, escape velocity ratio, tidal locking propensity, and composite similarity indices---to elucidate their statistical structure and explanatory power for a learned habitability score. Using distributional diagnostics, correlation structure, response surface inspection, binned trend aggregation, discriminative margin analysis, and model-based feature importance, we identify principal drivers, redundancies, and limiting degeneracies. Results highlight radiative balance and atmospheric retention proxies as dominant determinants, while multicollinearity among bulk parameters suggests scope for dimensionality reduction.
+\end{abstract}
+	ableofcontents\newpage
+
+\section{Introduction}
+The characterization of exoplanet habitability necessitates translating catalog observables (stellar effective temperature, stellar radius, planetary radius, mass proxies, orbital semi-major axis) into physics-grounded descriptors. These descriptors (e.g., equilibrium temperature $T_{eq}$, escape velocity $v_{esc}$, insolation flux $S$, tidal locking likelihood, and the Earth Similarity Index (ESI)) capture energy balance, retention capacity, and dynamical state. This manuscript formalizes previously exploratory interpretation, supplying academically styled exposition suitable for archival review.
+
+We pursue three questions: (i) What statistical and correlational regimes govern engineered features? (ii) How do individual physics drivers map onto an inferred continuous habitability score? (iii) Which features emerge as most influential in a tree-ensemble interpretability context?
+
+\section{Data and Feature Engineering}
+We aggregate cleaned mission and archive sources (NASA Exoplanet Archive, TESS TOI supplements, Gaia cross-matches) and compute derived quantities:
+\begin{itemize}
+  \item \textbf{Equilibrium Temperature:} $T_{eq} = T_{\star} \sqrt{\tfrac{R_{\star}}{2a}} (1-A)^{1/4}$ under zero greenhouse and uniform reradiation assumptions.
+  \item \textbf{Insolation Flux:} $S = \dfrac{L_{\star}}{4\pi a^2}$, scaled to Earth units to contextualize climatic forcing.
+  \item \textbf{Escape Velocity Ratio:} $v_{esc}/v_{esc,\oplus} = \sqrt{(M/M_{\oplus})/(R/R_{\oplus})}$, a proxy for atmospheric retention probability.
+  \item \textbf{Tidal Locking Proxy:} Timescale $\tau_{lock}$ approximated (order-of-magnitude) by $\tau \propto \dfrac{a^6 Q}{3 G m_{\star}^2 k_2 R^5}$ (constants suppressed for relative comparison).
+  \item \textbf{Earth Similarity Index (ESI):} Composite similarity metric over normalized radius, density, and temperature dimensions.
+\end{itemize}
+
+\section{Methods}
+We perform a staged visual-analytic protocol: (a) univariate distribution assessment (Figure~\ref{fig:dist}), (b) correlation analysis (Figure~\ref{fig:corr}) via Pearson coefficients $r_{XY}$, (c) multi-driver response grids (Figure~\ref{fig:grid}), (d) binned trend smoothing (Figure~\ref{fig:binned}), (e) margin evaluation between discretized classes (Figure~\ref{fig:separation}), and (f) ensemble feature importance (Figure~\ref{fig:importance}). Random Forest importance leverages impurity reduction: Gini $I_G=\sum_k p_k (1-p_k)$; cumulative weighted decreases approximate marginal contribution.
+
+\section{Results}
+\subsection{Distributional Structure}
+Figure~\ref{fig:dist} reveals scale heterogeneity and skewness: long tails in irradiation and temperature derivatives contrast with relatively compact distributions of size ratios. Such disparities motivate normalization and caution against variance-dominated learning.
+\begin{figure}[htbp]
+  \centering
+  \safeinclude{../images/relations/01_feature_distributions.png}{Feature distributions panel}
+  \caption{Univariate feature distributions highlighting skew, multi-modality, and scale disparities relevant to model calibration.}
+  \label{fig:dist}
+\end{figure}
+
+\subsection{Correlation Regimes}
+Figure~\ref{fig:corr} indicates clusters (e.g., radius, mass-derived gravity proxies) exhibiting high linear dependence, implying potential dimensionality reduction. Moderate correlation between flux and equilibrium temperature underscores partially redundant radiative descriptors.
+\begin{figure}[htbp]
+  \centering
+  \safeinclude{../images/relations/02_correlation_matrix.png}{Correlation matrix}
+  \caption{Pearson correlation matrix showing redundancy blocks and informing feature pruning strategies.}
+  \label{fig:corr}
+\end{figure}
+
+\subsection{Driver Response Surfaces}
+The multi-panel grid (Figure~\ref{fig:grid}) illustrates monotonic or threshold-like relationships between physics drivers and habitability score. Saturation suggests diminishing returns for certain radiative metrics beyond optimal mid-range bands.
+\begin{figure}[htbp]
+  \centering
+  \safeinclude{../images/relations/03_physics_vs_habitability_scatter_grid.png}{Physics vs habitability grid}
+  \caption{Scatter grid mapping individual physics-derived features to inferred habitability score, revealing monotonic and saturating behaviors.}
+  \label{fig:grid}
+\end{figure}
+
+\subsection{Binned Trend Aggregation}
+Figure~\ref{fig:binned} smooths noise via bin means $\bar y_j = \frac{1}{|B_j|}\sum_{i\in B_j} y_i$, clarifying coarse functional shapes (e.g., peaked vs strictly increasing), aiding feature transformation considerations.
+\begin{figure}[htbp]
+  \centering
+  \safeinclude{../images/relations/04_binned_trends.png}{Binned feature trends}
+  \caption{Binned averages emphasize macro-level tendencies while attenuating local stochastic variance.}
+  \label{fig:binned}
+\end{figure}
+
+\subsection{Score vs Class Margin}
+The separation visualization (Figure~\ref{fig:separation}) assesses overlap between class-conditioned score densities, constraining achievable classification performance and guiding threshold calibration.
+\begin{figure}[htbp]
+  \centering
+  \safeinclude{../images/relations/05_score_class_separation.png}{Score vs class separation}
+  \caption{Continuous habitability score distributions stratified by class label; overlap regions bound discriminative ceiling.}
+  \label{fig:separation}
+\end{figure}
+
+\subsection{Fundamental Scaling: Temperature vs Distance}
+Figure~\ref{fig:temp-distance} tests radiative equilibrium scaling $T_{eq} \propto a^{-1/2}$. Deviations may arise from albedo assumptions and stellar parameter uncertainties.
+\begin{figure}[htbp]
+  \centering
+  \safeinclude{../images/relations/06_temp_vs_axis.png}{Equilibrium temperature vs orbital distance}
+  \caption{Equilibrium temperature trend versus semi-major axis showing inverse square-root qualitative behavior with residual dispersion.}
+  \label{fig:temp-distance}
+\end{figure}
+
+\subsection{Escape Velocity and Retention Potential}
+Figure~\ref{fig:escape} shows a mild positive association: higher $v_{esc}$ correlates with improved retention probability, mitigating volatile loss and enabling stable atmospheric envelopes.
+\begin{figure}[htbp]
+  \centering
+  \safeinclude{../images/relations/07_escape_velocity_vs_habitability.png}{Escape velocity vs habitability}
+  \caption{Relationship between escape velocity and habitability score, reflecting atmospheric retention influence.}
+  \label{fig:escape}
+\end{figure}
+
+\subsection{Composite Similarity (ESI)}
+Figure~\ref{fig:esi} validates that higher ESI distributions skew toward elevated habitability scores, affirming coherence between composite similarity logic and learned outcomes.
+\begin{figure}[htbp]
+  \centering
+  \safeinclude{../images/relations/08_esi_by_class.png}{ESI by class}
+  \caption{Earth Similarity Index distribution across habitability class partitions.}
+  \label{fig:esi}
+\end{figure}
+
+\subsection{Tidal Lock Likelihood}
+Figure~\ref{fig:lock} evaluates rotational state implications. Elevated locking likelihoods may introduce longitudinal climatic extremes, reflected in modestly reduced central habitability tendencies.
+\begin{figure}[htbp]
+  \centering
+  \safeinclude{../images/relations/09_tidal_lock_vs_habitability.png}{Tidal lock likelihood vs habitability}
+  \caption{Habitability score variation with a tidal locking proxy; potential climatic dichotomy effects noted.}
+  \label{fig:lock}
+\end{figure}
+
+\subsection{Model-Derived Feature Importance}
+Figure~\ref{fig:importance} ranks features via Random Forest impurity reduction, emphasizing radiative and retention proxies; correlated clusters diffuse individual attribution.
+\begin{figure}[htbp]
+  \centering
+  \safeinclude{../images/relations/10_interpretive_rf_importance.png}{Random Forest feature importance}
+  \caption{Relative feature importance indicating dominant physics-derived explanatory variables.}
+  \label{fig:importance}
+\end{figure}
+
+\section{Discussion}
+Key findings: (i) Radiative balance variables dominate explanatory power; (ii) Redundant bulk descriptors invite dimensionality compression; (iii) Atmospheric retention proxies contribute secondary, yet consistent, uplift; (iv) Tidal locking indicators show nuanced, non-binary influence requiring more granular dynamical modeling. Limitations include simplified albedo assumptions and neglect of stellar activity modulation.
+
+\section{Limitations and Future Work}
+Future enhancement pathways: incorporation of stellar flare frequency statistics, photochemical atmospheric loss modeling, spectral biosignature priors, and Bayesian hierarchical approaches for propagating measurement uncertainties into habitability inference.
+
+\section{Conclusion}
+This refined academic treatment links first-principles physics to predictive habitability modeling through a structured visual-explanatory lens, providing an interpretable scaffold for subsequent spectroscopic and temporal expansion.
+
+\section*{Acknowledgements}
+We acknowledge open data assets provided by NASA archives and community-maintained exoplanet catalogs.
+
+\section*{References}
+% Placeholder – integrate bibliography tooling (e.g., biblatex) in future iteration.
+
+\end{document}

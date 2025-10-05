@@ -226,7 +226,7 @@ const PrivacyPage: React.FC = () => {
                 <>
                   Full source code inspection available at{' '}
                   <Link 
-                    href="https://github.com/SatnamCodes/nasa-hwo-habitability-explorer" 
+                    href="https://github.com/your-username/nasa-hwo-habitability-explorer" 
                     target="_blank" 
                     rel="noopener noreferrer"
                   >
@@ -273,7 +273,7 @@ const PrivacyPage: React.FC = () => {
                 <>
                   Report technical issues at{' '}
                   <Link 
-                    href="https://github.com/SatnamCodes/nasa-hwo-habitability-explorer/issues" 
+                    href="https://github.com/your-username/nasa-hwo-habitability-explorer/issues" 
                     target="_blank" 
                     rel="noopener noreferrer"
                   >

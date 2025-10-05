@@ -11,7 +11,12 @@ References:
 
 import numpy as np
 from typing import Dict, Optional
-from .physics_constants import PhysicalConstants
+
+# Try relative imports first, fall back to absolute
+try:
+    from .physics_constants import PhysicalConstants
+except ImportError:
+    from physics_constants import PhysicalConstants
 
 
 class StellarPhysics:
@@ -98,6 +103,61 @@ class StellarPhysics:
             alpha = 1.0  # Very massive
         
         return stellar_mass ** alpha
+    
+    def calculate_equilibrium_temperature(
+        self,
+        stellar_luminosity: float,
+        semi_major_axis: float,
+        albedo: float = 0.3,
+        greenhouse_factor: float = 1.1
+    ) -> float:
+        """
+        Calculate planet equilibrium temperature considering energy balance.
+        
+        PHYSICS EXPLANATION:
+        
+        The equilibrium temperature is derived from energy balance:
+        - Incoming stellar flux: F_in = L_star / (4π a²) × (1 - A)
+        - Outgoing thermal radiation: F_out = σ T_eq⁴
+        - At equilibrium: F_in = F_out
+        
+        Formula: T_eq = [(L_star × (1-A)) / (16 π σ a²)]^(1/4) × f_greenhouse
+        
+        Where:
+        - L_star: Stellar luminosity
+        - a: Semi-major axis (orbital distance)
+        - A: Bond albedo (fraction of light reflected)
+        - σ: Stefan-Boltzmann constant
+        - f_greenhouse: Greenhouse warming factor (1.0 = no atmosphere)
+        
+        Parameters:
+        -----------
+        stellar_luminosity : float
+            In solar luminosities
+        semi_major_axis : float
+            In AU
+        albedo : float, optional
+            Bond albedo (0-1), default 0.3 (Earth-like)
+        greenhouse_factor : float, optional
+            Atmospheric warming factor, default 1.1
+        
+        Returns:
+        --------
+        float
+            Equilibrium temperature in Kelvin
+        """
+        
+        # Convert to SI units
+        L_watts = stellar_luminosity * self.const.L_sun
+        a_meters = semi_major_axis * self.const.AU
+        
+        # Energy balance equation
+        T_eq = ((L_watts * (1 - albedo)) / (16 * np.pi * self.const.sigma_SB * a_meters**2)) ** 0.25
+        
+        # Apply greenhouse warming
+        T_effective = T_eq * greenhouse_factor
+        
+        return T_effective
     
     def calculate_habitable_zone_boundaries(
         self,

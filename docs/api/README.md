@@ -495,7 +495,7 @@ curl -X POST http://localhost:8000/api/calculate-habitability \
 ## Support
 
 **Technical Issues:**
-- [GitHub Issues](https://github.com/SatnamCodes/nasa-hwo-habitability-explorer/issues)
+- [GitHub Issues](https://github.com/username/nasa-hwo-habitability-explorer/issues)
 
 **Documentation:**
 - [API Endpoints](endpoints.md) - Detailed endpoint reference

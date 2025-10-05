@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState, useCallback } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { getPlanetData, Planet } from '../services/localData';
+import { getPlanetData, Planet, refreshPlanetData } from '../services/localData';
 
 interface UseGalaxyMapReturn {
   mapContainerRef: React.RefObject<HTMLDivElement>;
@@ -12,6 +12,7 @@ interface UseGalaxyMapReturn {
   planets: Planet[] | null;
   showOrbitalPaths: (planet: Planet) => void;
   focusOnPlanet: (planet: Planet) => void;
+  refreshData: () => Promise<void>;
 }
 
 export type { UseGalaxyMapReturn };
@@ -349,6 +350,22 @@ const useGalaxyMap = (): UseGalaxyMapReturn => {
     }
   }, []);
 
+  const refreshData = useCallback(async () => {
+    setLoading(true);
+    try {
+      // Trigger backend refresh
+      await refreshPlanetData();
+      // Reload planet data
+      const newPlanets = await getPlanetData();
+      setPlanets(newPlanets);
+      setPlanetCount(newPlanets.length);
+    } catch (error) {
+      console.error('Failed to refresh data:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   return { 
     mapContainerRef, 
     planetCount, 
@@ -357,7 +374,8 @@ const useGalaxyMap = (): UseGalaxyMapReturn => {
     onPlanetModalClose,
     planets,
     showOrbitalPaths,
-    focusOnPlanet
+    focusOnPlanet,
+    refreshData
   };
 };
 

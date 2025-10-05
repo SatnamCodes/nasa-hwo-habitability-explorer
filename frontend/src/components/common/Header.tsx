@@ -34,6 +34,7 @@ const Header: React.FC = () => {
     { label: 'Planet Explorer', path: '/planets', icon: <Explore /> },
     { label: '3D Galaxy Map', path: '/galaxy-map', icon: <Timeline /> },
     { label: 'HWO Targets', path: '/hwo-targets', icon: <Timeline /> },
+    { label: 'Findings', path: '/findings', icon: <Timeline /> },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -44,13 +45,15 @@ const Header: React.FC = () => {
         position="fixed" 
         elevation={0}
         sx={{
-          backgroundColor: scrolled 
-            ? 'rgba(255, 255, 255, 0.95)' 
-            : 'rgba(255, 255, 255, 0.8)',
-          backdropFilter: 'blur(20px)',
-          borderBottom: scrolled 
-            ? '1px solid #e5e5e7' 
-            : '1px solid transparent',
+          background: scrolled
+            ? 'linear-gradient(135deg, rgba(30,30,45,0.88) 0%, rgba(10,10,25,0.88) 100%)'
+            : 'linear-gradient(135deg, rgba(40,40,60,0.55) 0%, rgba(15,15,30,0.55) 100%)',
+          backdropFilter: 'blur(30px) saturate(160%)',
+          WebkitBackdropFilter: 'blur(30px) saturate(160%)',
+          borderBottom: scrolled
+            ? '1px solid rgba(255,255,255,0.15)'
+            : '1px solid rgba(255,255,255,0.08)',
+          boxShadow: scrolled ? '0 8px 24px -6px rgba(0,0,0,0.4)' : '0 4px 18px -8px rgba(0,0,0,0.35)',
           transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         }}
       >

@@ -27,11 +27,11 @@
 
 ```bash
 # HTTPS
-git clone https://github.com/SatnamCodes/nasa-hwo-habitability-explorer.git
+git clone https://github.com/username/nasa-hwo-habitability-explorer.git
 cd nasa-hwo-habitability-explorer
 
 # SSH (if configured)
-git clone git@github.com:SatnamCodes/nasa-hwo-habitability-explorer.git
+git clone https://github.com/username/nasa-hwo-habitability-explorer.git
 cd nasa-hwo-habitability-explorer
 ```
 

@@ -24,7 +24,8 @@ import {
   ExpandMore, 
   Clear,
   Visibility,
-  VisibilityOff 
+  VisibilityOff,
+  Refresh 
 } from '@mui/icons-material';
 import './GalaxyMap.css';
 import useGalaxyMap from '../../hooks/useGalaxyMap';
@@ -42,7 +43,7 @@ interface GalaxyMapFilters {
 }
 
 const GalaxyMap: React.FC = () => {
-  const { mapContainerRef, planetCount, loading, selectedPlanet, onPlanetModalClose, planets } = useGalaxyMap();
+  const { mapContainerRef, planetCount, loading, selectedPlanet, onPlanetModalClose, planets, refreshData } = useGalaxyMap();
   
   // Filter states
   const [filters, setFilters] = useState<GalaxyMapFilters>({
@@ -149,13 +150,24 @@ const GalaxyMap: React.FC = () => {
           <Typography variant="h6">
             3D Galaxy Explorer
           </Typography>
-          <IconButton 
-            size="small" 
-            onClick={() => setShowFilters(!showFilters)}
-            sx={{ color: 'white' }}
-          >
-            <FilterList />
-          </IconButton>
+          <Box display="flex" gap={1}>
+            <IconButton 
+              size="small" 
+              onClick={refreshData}
+              disabled={loading}
+              sx={{ color: 'white' }}
+              title="Refresh live data from NASA"
+            >
+              <Refresh />
+            </IconButton>
+            <IconButton 
+              size="small" 
+              onClick={() => setShowFilters(!showFilters)}
+              sx={{ color: 'white' }}
+            >
+              <FilterList />
+            </IconButton>
+          </Box>
         </Box>
 
         {/* Search Bar */}
@@ -195,6 +207,9 @@ const GalaxyMap: React.FC = () => {
           <Box mb={2}>
             <Typography variant="body2">
               Showing {filteredPlanetCount} of {planetCount} exoplanets
+            </Typography>
+            <Typography variant="caption" color="lightgreen">
+              🌐 Live data from NASA Exoplanet Archive
             </Typography>
             {filters.searchQuery && (
               <Chip 

@@ -484,8 +484,8 @@ Click any target to view comprehensive details:
 - [Deployment Guide](deployment/README.md) - Setup and configuration
 
 **Technical Support:**
-- [GitHub Issues](https://github.com/SatnamCodes/nasa-hwo-habitability-explorer/issues) - Bug reports and feature requests
-- [GitHub Discussions](https://github.com/SatnamCodes/nasa-hwo-habitability-explorer/discussions) - Community support
+- [GitHub Issues](https://github.com/username/nasa-hwo-habitability-explorer/issues) - Bug reports and feature requests
+- [GitHub Discussions](https://github.com/username/nasa-hwo-habitability-explorer/discussions) - Community support
 
 **NASA Resources:**
 - [NASA HWO Mission](https://www.nasa.gov/hwo) - Official mission information
@@ -515,7 +515,7 @@ Click any target to view comprehensive details:
 
 ---
 
-**Support:** For technical assistance, please refer to our [GitHub Issues](https://github.com/SatnamCodes/nasa-hwo-habitability-explorer/issues) page.
+**Support:** For technical assistance, please refer to our [GitHub Issues](https://github.com/username/nasa-hwo-habitability-explorer/issues) page.
 
 **Last Updated:** August 23, 2025  
 **Version:** 1.0.0 - NASA Submission Ready ✅

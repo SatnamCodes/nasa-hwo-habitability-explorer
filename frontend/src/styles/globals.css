@@ -14,9 +14,63 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #ffffff;
-  color: #000000;
+  background: radial-gradient(circle at 20% 20%, #101522 0%, #090d14 35%, #05070b 70%) fixed;
+  background-attachment: fixed;
+  color: #ffffff;
   line-height: 1.6;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Starfield layers */
+body::before, body::after {
+  content: '';
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: -2;
+}
+
+body::before {
+  background: repeating-radial-gradient(circle at 10% 15%, rgba(255,255,255,0.12) 0 1px, transparent 1px 80px),
+              repeating-radial-gradient(circle at 80% 60%, rgba(255,255,255,0.10) 0 1px, transparent 1px 90px),
+              repeating-radial-gradient(circle at 50% 50%, rgba(255,255,255,0.085) 0 1px, transparent 1px 70px);
+  animation: twinkle 18s linear infinite;
+  mix-blend-mode: screen;
+}
+
+body::after {
+  background: linear-gradient(120deg, rgba(58,92,160,0.15) 0%, rgba(168,80,180,0.12) 45%, rgba(255,150,150,0.08) 100%);
+  z-index: -1;
+}
+
+@keyframes twinkle {
+  0% { opacity: 0.7; }
+  50% { opacity: 0.95; }
+  100% { opacity: 0.7; }
+}
+
+/* Glass utility */
+.glass-surface {
+  background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%);
+  backdrop-filter: blur(26px) saturate(160%) contrast(110%);
+  -webkit-backdrop-filter: blur(26px) saturate(160%) contrast(110%);
+  border: 1px solid rgba(255,255,255,0.18);
+  box-shadow: 0 8px 32px -8px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(255,255,255,0.05);
+}
+
+/* Gradient accents */
+.gradient-accent {
+  background: linear-gradient(90deg,#8EC5FC 0%, #E0C3FC 50%, #FBC2EB 100%);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* Dark mode root background */
+html[data-color-mode='dark'] body {
+  background: radial-gradient(circle at 30% 20%, #1b2735 0%, #0e1116 60%, #0a0d12 100%);
+  color: #f5f7fa;
 }
 
 /* Smooth scrolling */

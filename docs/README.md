@@ -167,16 +167,16 @@ Our habitability scoring system implements rigorous scientific criteria based on
 - [Observatory Technology](resources/observatory_tech.md) - Technical specifications
 
 ### Development Resources
-- [GitHub Repository](https://github.com/SatnamCodes/nasa-hwo-habitability-explorer) - Source code
-- [Issue Tracker](https://github.com/SatnamCodes/nasa-hwo-habitability-explorer/issues) - Bug reports
-- [Discussions](https://github.com/SatnamCodes/nasa-hwo-habitability-explorer/discussions) - Community
+- [GitHub Repository](https://github.com/username/nasa-hwo-habitability-explorer) - Source code
+- [Issue Tracker](https://github.com/username/nasa-hwo-habitability-explorer/issues) - Bug reports
+- [Discussions](https://github.com/username/nasa-hwo-habitability-explorer/discussions) - Community
 
 ---
 
 ## 📞 Support Contacts
 
 **Technical Support:**
-- GitHub Issues: [Report technical issues](https://github.com/SatnamCodes/nasa-hwo-habitability-explorer/issues)
+- GitHub Issues: [Report technical issues](https://github.com/username/nasa-hwo-habitability-explorer/issues)
 - Documentation: Complete guides available in this directory
 
 **NASA HWO Mission:**
