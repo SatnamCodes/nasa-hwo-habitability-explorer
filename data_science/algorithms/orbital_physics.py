@@ -12,7 +12,12 @@ References:
 
 import numpy as np
 from typing import Optional
-from .physics_constants import PhysicalConstants
+
+# Try relative imports first, fall back to absolute
+try:
+    from .physics_constants import PhysicalConstants
+except ImportError:
+    from physics_constants import PhysicalConstants
 
 
 class OrbitalPhysics:

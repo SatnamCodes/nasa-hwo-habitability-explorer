@@ -1,9 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from pathlib import Path
 from app.api import planets, predictions, hwo_targets
 from app.api import observability
 from app.api import hwo_scoring
 from app.api import nasa_data
+from app.api import findings
 from app.config import settings
 from app.utils import model_loader
 
@@ -29,6 +32,13 @@ app.include_router(hwo_targets.router, prefix="/api/v1/hwo-targets", tags=["hwo-
 app.include_router(observability.router, prefix="/api/v1/observability", tags=["observability"])
 app.include_router(hwo_scoring.router, tags=["HWO AI/ML Scoring"])
 app.include_router(nasa_data.router, prefix="/api/v1/nasa", tags=["NASA Data"])
+app.include_router(findings.router)
+
+# Static mount for LaTeX sources (read-only)
+BASE_DIR = Path(__file__).resolve().parents[2]
+LATEX_DIR = BASE_DIR / "docs" / "latex"
+if LATEX_DIR.exists():
+    app.mount("/static/latex", StaticFiles(directory=str(LATEX_DIR)), name="latex")
 
 
 @app.on_event('startup')

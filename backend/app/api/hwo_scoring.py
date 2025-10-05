@@ -514,30 +514,68 @@ class HWOScoringEngine:
             habitability_score = 50.0
             habitability_class = "Unknown"
             
-            # Skip ML predictions for now to isolate the issue
-            if False:  # Temporarily disabled
-                # Prepare features
-                features = self._prepare_features(target)
-                
-                # Scale features
-                if self.scaler:
-                    features_scaled = self.scaler.transform(features)
-                else:
-                    features_scaled = features
-                
-                # Make predictions with error handling
+            # ML predictions (re-enabled with robust guards)
+            if self.regressor or self.classifier:
                 try:
+                    features = self._prepare_features(target)
+                    features_scaled = self.scaler.transform(features) if self.scaler else features
+
+                    # Regression model for continuous habitability score (0-1 expected)
                     if self.regressor:
-                        hab_score_raw = self.regressor.predict(features_scaled)
-                        if hasattr(hab_score_raw, '__len__') and len(hab_score_raw) > 0:
-                            hab_score_val = float(hab_score_raw[0])
-                        else:
-                            hab_score_val = float(hab_score_raw)
-                        habitability_score = max(0, min(100, hab_score_val * 100))
-                        ml_predictions['habitability_regression'] = hab_score_val
+                        try:
+                            hab_score_raw = self.regressor.predict(features_scaled)
+                            if hasattr(hab_score_raw, '__len__') and len(hab_score_raw) > 0:
+                                hab_score_val = float(hab_score_raw[0])
+                            else:
+                                hab_score_val = float(hab_score_raw)
+                            # Normalize if out of bounds
+                            if hab_score_val > 1.5:  # model maybe trained on 0-100 scale already
+                                # If seems like already in 0-100 range, scale down
+                                hab_score_norm = max(0, min(100, hab_score_val))
+                                ml_predictions['habitability_regression_raw'] = hab_score_val
+                                habitability_score = hab_score_norm
+                            else:
+                                habitability_score = max(0, min(100, hab_score_val * 100))
+                            ml_predictions['habitability_regression'] = habitability_score / 100.0
+                        except Exception as e:
+                            logger.warning(f"Regressor prediction failed: {e}")
+
+                    # Classifier for probability / class
+                    if self.classifier:
+                        try:
+                            class_pred = self.classifier.predict(features_scaled)
+                            # Probability if available
+                            if hasattr(self.classifier, 'predict_proba'):
+                                proba = self.classifier.predict_proba(features_scaled)
+                                if proba is not None and len(proba) > 0:
+                                    # Assume binary or multi-class; use max probability for confidence
+                                    max_prob = float(max(proba[0]))
+                                    ml_predictions['habitability_probability'] = max_prob
+                                    # If regression not present, map probability to habitability score
+                                    if 'habitability_regression' not in ml_predictions:
+                                        habitability_score = max(0, min(100, max_prob * 100))
+                            # Class label
+                            if hasattr(class_pred, '__len__') and len(class_pred) > 0:
+                                predicted_class = str(class_pred[0])
+                            else:
+                                predicted_class = str(class_pred)
+                            ml_predictions['habitability_classification'] = predicted_class
+                            habitability_class = predicted_class
+                        except Exception as e:
+                            logger.warning(f"Classifier prediction failed: {e}")
+
                 except Exception as e:
-                    logger.warning(f"Regressor prediction failed: {str(e)}")
-                    
+                    logger.warning(f"ML feature preparation/prediction failure fallback to heuristic only: {e}")
+
+            # If class still 'Unknown', derive a coarse class from score
+            if habitability_class == "Unknown":
+                if habitability_score >= 70:
+                    habitability_class = "High"
+                elif habitability_score >= 40:
+                    habitability_class = "Moderate"
+                else:
+                    habitability_class = "Low"
+
                 try:
                     if self.classifier:
                         hab_class_pred = self.classifier.predict(features_scaled)
@@ -701,11 +739,20 @@ async def upload_csv_targets(file: UploadFile = File(...)):
                         target_data[our_field] = row[csv_column]
                 
                 # Create target with proper type conversion
+                # Normalize units where necessary
+                planet_radius_value = float(target_data.get('planet_radius', 0)) if 'planet_radius' in target_data else 0.0
+                radius_col = detected_mapping.get('planet_radius')
+                if radius_col:
+                    col_lower = str(radius_col).lower()
+                    # If the source column indicates Earth radii, convert to Jupiter radii
+                    if 'earth' in col_lower:
+                        planet_radius_value = planet_radius_value / 11.2
+
                 target = ExoplanetTarget(
                     name=str(target_data.get('name', f'Target-{index+1}')),
                     distance=float(target_data.get('distance', 0)),
                     star_type=str(target_data.get('star_type', 'Unknown')),
-                    planet_radius=float(target_data.get('planet_radius', 0)),
+                    planet_radius=float(planet_radius_value),
                     orbital_period=float(target_data.get('orbital_period', 0)),
                     stellar_mass=float(target_data.get('stellar_mass', 1)),
                     planet_mass=float(target_data['planet_mass']) if 'planet_mass' in target_data and target_data['planet_mass'] else None,
